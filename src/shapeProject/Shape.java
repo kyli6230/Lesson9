@@ -40,7 +40,7 @@ abstract public class Shape {
         return yPos;
     }
 
-    final public void move(double xLoc, double yLoc) {
+    public void move(double xLoc, double yLoc) {
         xPos = xLoc;
         yPos = yLoc;
     }

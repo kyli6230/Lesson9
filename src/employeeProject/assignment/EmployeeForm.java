@@ -1,9 +1,18 @@
 package employeeProject.assignment;
 
+import java.text.NumberFormat;
+import javax.swing.JOptionPane;
+
 public class EmployeeForm extends javax.swing.JFrame {
 
+    Employee emp[];
+    int size=0;
+    NumberFormat nf;
+    
     public EmployeeForm() {
         initComponents();
+        emp = new Employee[10];
+        nf = NumberFormat.getCurrencyInstance();
     }
 
     @SuppressWarnings("unchecked")
@@ -26,7 +35,7 @@ public class EmployeeForm extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tblemp = new javax.swing.JTable();
         jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
+        lbltotalpay = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Employee Pay list");
@@ -39,6 +48,12 @@ public class EmployeeForm extends javax.swing.JFrame {
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel3.setText("Hours:");
+
+        txtrate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtrateActionPerformed(evt);
+            }
+        });
 
         jLabel4.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
         jLabel4.setText("Employee Type");
@@ -84,6 +99,11 @@ public class EmployeeForm extends javax.swing.JFrame {
 
         quitbtn.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         quitbtn.setText("Quit");
+        quitbtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                quitbtnActionPerformed(evt);
+            }
+        });
 
         tblemp.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -107,12 +127,12 @@ public class EmployeeForm extends javax.swing.JFrame {
         jLabel5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel5.setText("Total Pay:");
 
-        jLabel6.setBackground(new java.awt.Color(0, 0, 0));
-        jLabel6.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel6.setText("$0.00");
-        jLabel6.setOpaque(true);
+        lbltotalpay.setBackground(new java.awt.Color(0, 0, 0));
+        lbltotalpay.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        lbltotalpay.setForeground(new java.awt.Color(255, 255, 255));
+        lbltotalpay.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lbltotalpay.setText("$0.00");
+        lbltotalpay.setOpaque(true);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -152,7 +172,7 @@ public class EmployeeForm extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel5)
                                 .addGap(71, 71, 71)
-                                .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(lbltotalpay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap())
         );
@@ -190,7 +210,7 @@ public class EmployeeForm extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(jLabel6))
+                    .addComponent(lbltotalpay))
                 .addContainerGap(19, Short.MAX_VALUE))
         );
 
@@ -200,6 +220,41 @@ public class EmployeeForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void addbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addbtnActionPerformed
+        Employee temp;
+        String nm, type;
+        int hours;
+        double rate;
+        
+        try{
+            nm = txtname.getText();
+            hours = Integer.parseInt(txthours.getText());
+            rate = Double.parseDouble(txtrate.getText());
+            type = buttonGroup1.getSelection().getActionCommand();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(this, "Must fill out form correctly");
+            return;
+        }
+        if(type.equals("ft"))
+            temp = new FTEmployee();
+        else
+            temp = new PTEmployee();
+        
+        if (temp.setName(nm) && temp.setHours(hours) && temp.setRate(rate)){
+            emp[size] = temp;
+            tblemp.setValueAt(temp.getName(), size, 0);
+            tblemp.setValueAt(nf.format(temp.getPay()),size,1);
+            size++;
+            lbltotalpay.setText(nf.format(Employee.getTotalPay()));
+            //clearform();
+            return; //leave now
+        }
+        
+        String error = "ERROR\n=======\n";
+        if (temp.setName(nm)==false) error += "Name: " + Employee.getNameRules() + "\n";
+        if (temp.setHours(hours)==false) error += "Hours: " + Employee.getHoursRules() + "\n";
+        if (temp.setRate(rate)==false) error += "Rate: " + Employee.getRateRules();
+        JOptionPane.showMessageDialog(this, error);
+        
         String choice;
         try{
             choice = buttonGroup1.getSelection().getActionCommand();
@@ -209,7 +264,22 @@ public class EmployeeForm extends javax.swing.JFrame {
         }
         System.out.println("You chose " + choice);
         buttonGroup1.clearSelection();
+    }
+    
+    public void clearform(){
+        txtname.setText("");
+        txtrate.setText("");
+        txthours.setText("");
+        buttonGroup1.clearSelection();
     }//GEN-LAST:event_addbtnActionPerformed
+
+    private void quitbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_quitbtnActionPerformed
+        System.exit(0);
+    }//GEN-LAST:event_quitbtnActionPerformed
+
+    private void txtrateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtrateActionPerformed
+        // T
+    }//GEN-LAST:event_txtrateActionPerformed
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -251,11 +321,11 @@ public class EmployeeForm extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JRadioButton jRadioButton1;
     private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lbltotalpay;
     private javax.swing.JButton quitbtn;
     private javax.swing.JTable tblemp;
     private javax.swing.JTextField txthours;

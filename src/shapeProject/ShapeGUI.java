@@ -8,6 +8,7 @@ import javax.swing.JOptionPane;
 public class ShapeGUI extends javax.swing.JFrame {
 StandardPen p;
 Shape s;
+double xPos, yPos, xPos2, yPos2, xPos3, yPos3;
 //int shape = 1; //1 = circle/wheel, 2 = rect, 2 = triangle
     public ShapeGUI() {
         initComponents();
@@ -242,7 +243,6 @@ Shape s;
     private void circlebtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_circlebtnActionPerformed
         erase();
         s = new Circle(0,0,50);
-        //shape = 1;
         s.draw(p);
         txtinfo.setText(s.toString());
     }//GEN-LAST:event_circlebtnActionPerformed
@@ -252,14 +252,14 @@ Shape s;
         double y = Double.parseDouble(JOptionPane.showInputDialog(this, "Enter new y: ", "0"));
         erase();
         s.move(x,y);
-        s.draw(p);
         txtinfo.setText(s.toString());
+        s.draw(p);
+        
     }//GEN-LAST:event_movebtnActionPerformed
 
     private void wheelbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_wheelbtnActionPerformed
         erase();
         s = new Wheel(0,0,50,10);
-        //shape = 1;
         s.draw(p);
         txtinfo.setText(s.toString());
     }//GEN-LAST:event_wheelbtnActionPerformed
@@ -267,15 +267,13 @@ Shape s;
     private void rectbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rectbtnActionPerformed
         erase();
         s = new Rect(0,0,50,80);
-        //shape = 2;
         s.draw(p);
         txtinfo.setText(s.toString());
     }//GEN-LAST:event_rectbtnActionPerformed
 
     private void trianglebtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_trianglebtnActionPerformed
         erase();
-        s = new Rect(0,0,50,80); //change to triangle
-        //shape = 3;
+        s = new Triangle(0,0,100,0,50,100); //change to triangle
         s.draw(p);
         txtinfo.setText(s.toString());
     }//GEN-LAST:event_trianglebtnActionPerformed
